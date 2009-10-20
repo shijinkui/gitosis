@@ -25,7 +25,7 @@ To plug this into ``gitweb``, you have two choices.
    isolates the changes a bit more nicely. Recommended.
 """
 
-import os, urllib, logging
+import os, urllib, logging, glob, pwd
 
 from ConfigParser import NoSectionError, NoOptionError
 
@@ -36,6 +36,47 @@ def _escape_filename(s):
     s = s.replace('$', '\\$')
     s = s.replace('"', '\\"')
     return s
+
+def _generate_user_module_entry(name, repositories, fp):
+
+    log = logging.getLogger('gitosis.gitweb._generate_user_module_entry')
+    remove = repositories + os.sep
+    userpos = -1
+
+    # Deal with wildcards in the path
+    if -1 != name.find('$user'):
+        namesplit = name.split(os.sep)
+        # Work out which of the path components matches '$user' so
+        # we can use it later
+        for i in range(len(namesplit)):
+            if namesplit[i] == '$user':
+                userpos = i
+                break
+        name = name.replace('$user', '*')
+
+    if -1 != name.find('*'):
+        for entry in glob.glob(os.path.join(repositories, name)):
+            entry = entry.replace(remove, '')
+            # Now, if we have a userpos we can use that to work
+            # out who owns this repository
+            if userpos != -1:
+                namesplit = entry.split(os.sep)
+                owner = namesplit[userpos]
+                try:
+                    # Let's see if we can get a full name rather
+                    # than just username here
+                    pwnam = pwd.getpwnam(owner)
+                    owner = pwnam[4]
+                except:
+                    pass
+            else:
+                owner = ""
+            response = [entry]
+            response.append(owner)
+            line = ' '.join([urllib.quote_plus(s) for s in response])
+            print >>fp, line
+            log.debug('Found entry %s' % line)
+
 
 def generate_project_list_fp(config, fp):
     """
@@ -73,6 +114,11 @@ def generate_project_list_fp(config, fp):
             continue
 
         name, = l
+
+        # Special handling for $user and wildcard repositories
+        if -1 != name.find('$user') or -1 != name.find('*'):
+            _generate_user_module_entry(name, repositories, fp)
+            continue
 
         if not os.path.exists(os.path.join(repositories, name)):
             namedotgit = '%s.git' % name
@@ -112,8 +158,70 @@ def generate_project_list(config, path):
     finally:
         f.close()
 
+    f.flush()
+    os.fsync(f.fileno())
     os.rename(tmp, path)
 
+def _write_description(repositories, name, description):
+
+    log = logging.getLogger('gitosis.gitweb.write_description')
+
+    path = os.path.join(
+        repositories,
+        name,
+        'description',
+        )
+
+    log.debug('Writing new description file %s' % path)
+
+    tmp = '%s.%d.tmp' % (path, os.getpid())
+    f = file(tmp, 'w')
+    try:
+        print >>f, description
+    finally:
+        f.close()
+    f.flush()
+    os.fsync(f.fileno())
+    os.rename(tmp, path)
+
+def _generate_user_description_entry(name, repositories, description):
+
+    log = logging.getLogger('gitosis.gitweb._generate_user_description_entry')
+    remove = repositories + os.sep
+    userpos = -1
+
+    # Deal with wildcards in the path
+    if -1 != name.find('$user'):
+        namesplit = name.split(os.sep)
+        # Work out which of the path components matches '$user' so
+        # we can use it later
+        for i in range(len(namesplit)):
+            if namesplit[i] == '$user':
+                userpos = i
+                break
+        name = name.replace('$user', '*')
+
+    if -1 != name.find('*'):
+        for entry in glob.glob(os.path.join(repositories, name)):
+            relative = entry.replace(remove, '', 1)
+            # Now, if we have a userpos we can use that to work
+            # out who owns this repository
+            if userpos != -1:
+                namesplit = relative.split(os.sep)
+                owner = namesplit[userpos]
+                try:
+                    # Let's see if we can get a full name rather
+                    # than just username here
+                    pwnam = pwd.getpwnam(owner)
+                    owner = pwnam[4]
+                except:
+                    pass
+            else:
+                owner = ""
+
+            new_description = description.replace('$username', owner)
+            log.debug('Found entry %s: %s' % (entry, new_description))
+            _write_description(repositories, entry, new_description)
 
 def set_descriptions(config):
     """
@@ -141,6 +249,13 @@ def set_descriptions(config):
 
         name, = l
 
+        log.debug('looking at name %s' % name)
+
+        # Special handling for $user and wildcard repositories
+        if -1 != name.find('$user') or -1 != name.find('*'):
+            _generate_user_description_entry(name, repositories, description)
+            continue
+
         if not os.path.exists(os.path.join(repositories, name)):
             namedotgit = '%s.git' % name
             if os.path.exists(os.path.join(repositories, namedotgit)):
@@ -151,15 +266,4 @@ def set_descriptions(config):
                     % dict(name=name, repositories=repositories))
                 continue
 
-        path = os.path.join(
-            repositories,
-            name,
-            'description',
-            )
-        tmp = '%s.%d.tmp' % (path, os.getpid())
-        f = file(tmp, 'w')
-        try:
-            print >>f, description
-        finally:
-            f.close()
-        os.rename(tmp, path)
+        _write_description(repositories, name, description)
