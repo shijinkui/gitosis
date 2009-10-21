@@ -1,0 +1,55 @@
+#!/bin/sh /usr/share/dpatch/dpatch-run
+## 01-readme.dpatch by Daniel Baumann <daniel@debian.org>
+##
+## DP: Adjusts README to Debian commodities (Closes: #490230).
+
+@DPATCH@
+
+diff -Naurp gitosis.orig/README.rst gitosis/README.rst
+--- gitosis.orig/README.rst	2008-07-16 08:30:41.000000000 +0200
++++ gitosis/README.rst	2008-07-16 08:44:33.000000000 +0200
+@@ -38,7 +38,7 @@ Setting up
+ ==========
+ 
+ First, we will create the user that will own the repositories. This is
+-usually called ``git``, but any name will work, and you can have more
++usually called ``gitosis``, but any name will work, and you can have more
+ than one per system if you really want to. The user does not need a
+ password, but does need a valid shell (otherwise, SSH will refuse to
+ work). Don't use an existing account unless you know what you're
+@@ -51,11 +51,11 @@ domain). You may choose another location
+ 	sudo adduser \
+ 	    --system \
+ 	    --shell /bin/sh \
+-	    --gecos 'git version control' \
++	    --gecos 'git repository hosting' \
+ 	    --group \
+ 	    --disabled-password \
+ 	    --home /srv/example.com/git \
+-	    git
++	    gitosis
+ 
+ This command is known to work in Debian and Ubuntu. Your mileage may
+ vary.
+@@ -73,10 +73,10 @@ the actual configuration file, and it wi
+ ``~/.ssh/authorized_keys`` with a ``command=`` option that restricts
+ it to running ``gitosis-serve``. Run::
+ 
+-	sudo -H -u git gitosis-init <FILENAME.pub
++	sudo -H -u gitosis gitosis-init <FILENAME.pub
+ 	# (or just copy-paste the public key when prompted)
+ 
+-then just ``git clone git@SERVER:gitosis-admin.git``, and you get a
++then just ``git clone gitosis@SERVER:gitosis-admin.git``, and you get a
+ repository with SSH keys as ``keys/USER.pub`` and a ``gitosis.conf``
+ where you can configure who has access to what.
+ 
+@@ -122,7 +122,7 @@ it::
+ 	mkdir myproject
+ 	cd mypyroject
+ 	git init
+-	git remote add myserver git@MYSERVER:myproject.git
++	git remote add myserver gitosis@MYSERVER:myproject.git
+ 	# do some work, git add and commit files
+ 	git push myserver master:refs/heads/master
+ 
