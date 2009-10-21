@@ -156,10 +156,10 @@ def generate_project_list(config, path):
     try:
         generate_project_list_fp(config=config, fp=f)
     finally:
+        f.flush()
+        os.fsync(f.fileno())
         f.close()
 
-    f.flush()
-    os.fsync(f.fileno())
     os.rename(tmp, path)
 
 def _write_description(repositories, name, description):
@@ -179,9 +179,10 @@ def _write_description(repositories, name, description):
     try:
         print >>f, description
     finally:
+        f.flush()
+        os.fsync(f.fileno())
         f.close()
-    f.flush()
-    os.fsync(f.fileno())
+
     os.rename(tmp, path)
 
 def _generate_user_description_entry(name, repositories, description):
