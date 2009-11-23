@@ -1,3 +1,10 @@
+gitosis (0.2+20091020-amino3) unstable; urgency=low
+
+  * Add support for git-upload-archive for remote archive creation.
+    Depends on newer git (we're using git 1.6.5 on the server now).
+
+ -- Steve McIntyre <smcintyre@aminocom.com>  Mon, 23 Nov 2009 14:32:20 +0100
+
 gitosis (0.2+20091020-amino2) unstable; urgency=low
 
   * Fix the flush/sync code.

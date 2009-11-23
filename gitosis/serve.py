@@ -22,6 +22,8 @@ ALLOW_RE = re.compile("^'/*(?P<path>[a-zA-Z0-9][a-zA-Z0-9@._-]*(/[a-zA-Z0-9][a-z
 COMMANDS_READONLY = [
     'git-upload-pack',
     'git upload-pack',
+    'git-upload-archive',
+    'git upload-archive',
     ]
 
 COMMANDS_WRITE = [
@@ -40,6 +42,9 @@ class CommandMayNotContainNewlineError(ServingError):
 
 class UnknownCommandError(ServingError):
     """Unknown command denied"""
+
+class CommandTooLongError(ServingError):
+    """Command malformed - too many args"""
 
 class UnsafeArgumentsError(ServingError):
     """Arguments to command look dangerous"""
@@ -66,7 +71,7 @@ def serve(
     except ValueError:
         # all known "git-foo" commands take one argument; improve
         # if/when needed
-        raise UnknownCommandError()
+        raise CommandTooLongError()
 
     if verb == 'git':
         try:
@@ -74,7 +79,7 @@ def serve(
         except ValueError:
             # all known "git foo" commands take one argument; improve
             # if/when needed
-            raise UnknownCommandError()
+            raise CommandTooLongError()
         verb = '%s %s' % (verb, subverb)
 
     if (verb not in COMMANDS_WRITE
