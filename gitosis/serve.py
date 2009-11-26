@@ -7,6 +7,7 @@ prefix. Repository names are forced to match ALLOW_RE.
 import logging
 
 import sys, os, re
+import subprocess
 
 from gitosis import access
 from gitosis import repository
@@ -14,6 +15,9 @@ from gitosis import gitweb
 from gitosis import gitdaemon
 from gitosis import app
 from gitosis import util
+from gitosis.repository import GitInitError
+
+from ConfigParser import NoSectionError, NoOptionError
 
 log = logging.getLogger('gitosis.serve')
 
@@ -158,6 +162,19 @@ def serve(
         gitdaemon.set_export_ok(
             config=cfg,
             )
+
+        try:
+            post_init_hook = cfg.get('hooks', 'post-init')
+            log.info ('Running post-init hook %s for new repository' % post_init_hook)
+            returncode = subprocess.call(
+                args=[ post_init_hook, repopath ],
+                stdout=sys.stderr
+                )
+            if returncode != 0:
+                raise GitInitError('exit status %d from post-init hook %s' % (returncode, post_init_hook))
+
+        except (NoSectionError, NoOptionError):
+            pass
 
     # put the verb back together with the new path
     newcmd = "%(verb)s '%(path)s'" % dict(
