@@ -139,10 +139,14 @@ def serve(
            'git extension should have been stripped: %r' % relpath
     repopath = '%s.git' % relpath
     fullpath = os.path.join(topdir, repopath)
-    if not os.path.exists(fullpath):
-        # it doesn't exist on the filesystem, but the configuration
-        # refers to it, we're serving a write request, and the user is
-        # authorized to do that: create the repository on the fly
+    if verb in COMMANDS_WRITE and not os.path.exists(fullpath):
+        # IFF:
+        # 1. it doesn't exist on the filesystem
+        # 2. the configuration refers to it
+        # 3. we're serving a write request
+        # 4. and the user is authorized to do that:
+        # THEN:
+        # create the repository on the fly
 
         # create leading directories
         p = topdir
