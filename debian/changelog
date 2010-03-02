@@ -1,3 +1,16 @@
+gitosis (0.2+20091020-amino5) unstable; urgency=low
+
+  * Fix: typos in clone commands were creating empty repos
+
+ -- Steve McIntyre <smcintyre@aminocom.com>  Tue, 02 Mar 2010 11:59:24 +0100
+
+gitosis (0.2+20091020-amino4) unstable; urgency=low
+
+  * Add support for calling a hook script after running "git init" for a
+    new repository.
+
+ -- Steve McIntyre <smcintyre@aminocom.com>  Thu, 26 Nov 2009 13:46:46 +0000
+
 gitosis (0.2+20091020-amino3) unstable; urgency=low
 
   * Add support for git-upload-archive for remote archive creation.
