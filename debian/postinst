@@ -1,0 +1,31 @@
+#!/bin/sh
+
+set -e
+
+case "${1}" in
+	configure)
+		adduser --system --home /srv/gitosis --shell /bin/sh --disabled-password --no-create-home --gecos 'git repository hosting' --group gitosis
+
+		if [ ! -d /srv/gitosis ]
+		then
+			mkdir -p /srv/gitosis
+			chown gitosis:gitosis /srv/gitosis -R
+		else
+			echo "gitosis directory (/srv/gitosis) is already existing."
+			echo "Make sure it's owned by the gitosis user account."
+		fi
+		;;
+
+	abort-upgrade|abort-remove|abort-deconfigure)
+
+		;;
+
+	*)
+		echo "postinst called with unknown argument \`${1}'" >&2
+		exit 1
+		;;
+esac
+
+#DEBHELPER#
+
+exit 0

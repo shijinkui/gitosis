@@ -1,0 +1,17 @@
+gitosis in Debian
+-----------------
+
+After the installation of gitosis, the gitosis-admin repository needs to be
+initialized:
+
+  $ sudo -H -u gitosis gitosis-init < SSH_KEY.pub
+
+whereas SSH_KEY.pub is a ssh public key, see ssh-keygen(1).
+
+Git repositories can now be configured in gitosis.conf:
+
+  $ git clone gitosis@localhost:gitosis-admin.git
+
+See README.rst for more information.
+
+ -- Daniel Baumann <daniel@debian.org>  Wed, 23 Apr 2008 01:02:00 +0200

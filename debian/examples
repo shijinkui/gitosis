@@ -1,0 +1,4 @@
+etc-event.d-local-git-daemon
+example.conf
+gitweb.conf
+lighttpd-gitweb.conf

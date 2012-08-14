@@ -1,0 +1,65 @@
+#!/usr/bin/make -f
+
+include /usr/share/dpatch/dpatch.make
+
+DATE=$(shell date +%Y%m%d)
+VERSION=0.2
+
+upstream:
+	# Needs git-core
+
+	cd .. && \
+	git clone git://eagain.net/gitosis.git gitosis-$(VERSION)+$(DATE)
+
+	rm -rf ../gitosis-$(VERSION)+$(DATE)/debian
+	rm -rf ../gitosis-$(VERSION)+$(DATE)/.git
+	rm -f ../gitosis-$(VERSION)+$(DATE)/.gitignore
+
+	tar cfz ../gitosis_$(VERSION)+$(DATE).orig.tar.gz ../gitosis-$(VERSION)+$(DATE)
+
+clean: unpatch
+	dh_testdir
+	dh_testroot
+
+	python setup.py clean
+	rm -rf dist build gitosis.egg-info
+
+	dh_clean
+
+build:
+
+install: patch-stamp
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	mkdir -p debian/gitosis/usr/lib/python2.5/site-packages
+	PYTHONPATH=$(CURDIR)/debian/gitosis/usr/lib/python2.5/site-packages \
+	python setup.py install --prefix=$(CURDIR)/debian/gitosis/usr
+
+	rm -f debian/gitosis/usr/bin/easy_install* \
+		debian/gitosis/usr/lib/python2.5/site-packages/easy-install.pth \
+		debian/gitosis/usr/lib/python2.5/site-packages/setuptools.pth
+
+	chmod 0755 debian/gitosis/usr/lib/python*/site-packages/gitosis-*.egg/gitosis/templates/admin/hooks/post-update
+
+binary: binary-indep
+
+binary-arch:
+
+binary-indep: install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+	dh_installexamples
+	dh_pysupport
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+.PHONY: clean build install binary binary-arch binary-indep

@@ -1,0 +1,146 @@
+gitosis (0.2+20091020-amino5) unstable; urgency=low
+
+  * Fix: typos in clone commands were creating empty repos
+
+ -- Steve McIntyre <smcintyre@aminocom.com>  Tue, 02 Mar 2010 11:59:24 +0100
+
+gitosis (0.2+20091020-amino4) unstable; urgency=low
+
+  * Add support for calling a hook script after running "git init" for a
+    new repository.
+
+ -- Steve McIntyre <smcintyre@aminocom.com>  Thu, 26 Nov 2009 13:46:46 +0000
+
+gitosis (0.2+20091020-amino3) unstable; urgency=low
+
+  * Add support for git-upload-archive for remote archive creation.
+    Depends on newer git (we're using git 1.6.5 on the server now).
+
+ -- Steve McIntyre <smcintyre@aminocom.com>  Mon, 23 Nov 2009 14:32:20 +0100
+
+gitosis (0.2+20091020-amino2) unstable; urgency=low
+
+  * Fix the flush/sync code.
+
+ -- Steve McIntyre <smcintyre@aminocom.com>  Wed, 21 Oct 2009 10:52:16 +0100
+
+gitosis (0.2+20091020-amino1) unstable; urgency=low
+
+  * Amino local version of the gitosis package:
+    + Fix permissions for newly-created repositories (Closes: #544246)
+    + Add support for extra user-controlled repositories
+
+ -- Steve McIntyre <smcintyre@aminocom.com>  Tue, 20 Oct 2009 15:26:50 +0100
+
+gitosis (0.2+20080825-2) unstable; urgency=medium
+
+  [ Daniel Baumann ]
+  * Updating vcs fields in control file.
+  * Adjusting hash in README.Debian to reflect that you don't need to be root to
+    do the initial sudo call in order to initialize the gitosis-admin
+    repository. However, you need to have sudo access to execute commands on
+    behalf of the gitosis system user (which practically implies root privileges
+    anyway).
+  * Adding upstream location to copyright file.
+  * Using patch-stamp rather than patch in rules file.
+
+  [ Thomas Viehmann ]
+  * Remove easy-install.pth, setuptools.pth in debian/rules install and leave
+    that to packages providing the modules (Closes: #498209).
+  * Remove generated stuff in debian/rules clean.
+
+ -- Daniel Baumann <daniel@debian.org>  Sat, 20 Sep 2008 06:50:00 +0200
+
+gitosis (0.2+20080825-1) unstable; urgency=medium
+
+  * Merging upstream version 0.2+20080825.
+  * Adding suggests to git-daemon-run.
+  * Adding suggests to gitweb.
+  * Removing warnings about previous gitosis directory move, not required
+    anymore and just annoying.
+  * Issueing a note in postrm if the gitosis directory is already existing at
+    package installation time.
+  * Removing unused dh_install call in rules file.
+
+ -- Daniel Baumann <daniel@debian.org>  Mon,  1 Sep 2008 23:39:00 +0200
+
+gitosis (0.2+20080626-2) unstable; urgency=medium
+
+  * Moving gitosis home directory from /var/cache/gitosis to /srv/gitosis
+    (Closes: #488600).
+  * Conditionally setting owner of /var/cache/gitosis (Closes: #491501).
+
+ -- Daniel Baumann <daniel@debian.org>  Wed, 16 Jul 2008 08:49:00 +0200
+
+gitosis (0.2+20080626-1) unstable; urgency=medium
+
+  * Adding patch to adjust README to Debian commodities (Closes: #490230).
+  * Merging upstream version 0.2+20080626.
+  * Updating to standards 3.8.0.
+
+ -- Daniel Baumann <daniel@debian.org>  Wed, 16 Jul 2008 08:49:00 +0200
+
+gitosis (0.2+20080419-2) unstable; urgency=medium
+
+  * Ensuring that post-update is executable (Closes: #473613, #483602).
+  * Correcting clean target in rules file to build twice in a row.
+  * Manually enforce python-setuptools (>= 0.6c5) in depends.
+  * Updating to debhelper 7.
+  * Correcting indenting in copyright file.
+
+ -- Daniel Baumann <daniel@debian.org>  Fri, 30 May 2008 16:56:00 +0200
+
+gitosis (0.2+20080419-1) unstable; urgency=medium
+
+  * Improving wording of the 0.2+20080319-2 entry in changelog file.
+  * Adding README.Debian file.
+  * Reordering rules file.
+  * Rewriting copyright file in machine-interpretable format.
+  * Adding vcs fields in control file.
+  * Updating package to debhelper 6.
+  * Merging upstream version 0.2+20080419.
+
+ -- Daniel Baumann <daniel@debian.org>  Wed, 23 Apr 2008 01:02:00 +0200
+
+gitosis (0.2+20080319-3) unstable; urgency=medium
+
+  * Adjusting installation hack to python 2.5 (Closes: #477002).
+
+ -- Daniel Baumann <daniel@debian.org>  Sun, 20 Apr 2008 17:59:00 +0200
+
+gitosis (0.2+20080319-2) unstable; urgency=high
+
+  * Up to now, gitosis was using /var/cache/git to store its repositories. The
+    reason for this was that by using the same directory as git-daemon itself,
+    there was no need to adjust the configuration of git-daemon to make the
+    git repositories available (read-only) through the git protocol publically.
+    By moving them to /var/cache/gitosis, you need to reconfigure your
+    git-daemon to export also repositories in this directory, otherwise the
+    repositories are not accessible for anyone except those which are configured
+    in gitosis-admin (Closes: #472343, #473574).
+  * Using versioned depends against git-core for etch-backports compatibility
+    (Closes: #473908).
+  * Re-adding python-setuptools to depends (Closes: #473022).
+
+ -- Daniel Baumann <daniel@debian.org>  Mon,  7 Apr 2008 22:16:00 +0200
+
+gitosis (0.2+20080319-1) unstable; urgency=medium
+
+  * New upstream snapshot.
+  * Removed cruft from python-setuptools in /usr/bin (Closes: #470218).
+
+ -- Daniel Baumann <daniel@debian.org>  Thu, 20 Mar 2008 14:15:00 +0100
+
+gitosis (0.2+20080219-1) unstable; urgency=low
+
+  * New upstream snapshot.
+  * Replacing depends to python-setuptools with python-pkg-resources
+    (Closes: #468731).
+
+ -- Daniel Baumann <daniel@debian.org>  Fri,  7 Mar 2008 14:55:00 +0100
+
+gitosis (0.2+20080118-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Daniel Baumann <daniel@debian.org>  Fri, 18 Jan 2008 11:13:00 +0100
